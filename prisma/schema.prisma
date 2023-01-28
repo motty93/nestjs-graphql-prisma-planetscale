@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 generator nestgraphql {
@@ -13,27 +15,28 @@ generator nestgraphql {
 }
 
 model Author {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String   @id @default(uuid())
   sequentialId Int      @unique @default(autoincrement()) @map("sequential_id")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
 
-  firstName String @map("first_name")
-  lastName  String @map("last_name")
+  firstName String @map("first_name") @db.VarChar(128)
+  lastName  String @map("last_name") @db.VarChar(128)
 
   posts Post[]
 }
 
 model Post {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String   @id @default(uuid())
   sequentialId Int      @unique @default(autoincrement()) @map("sequential_id")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
 
-  authorId  String    @map("user_id") @db.Uuid
-  title     String
+  authorId  String    @map("user_id")
+  title     String    @db.Text()
   votes     Int?      @default(0)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(0)
 
-  author Author @relation(fields: [authorId], references: [id], onUpdate: Restrict)
+  // planetscaleではonUpdate: NoAction必須
+  author Author @relation(fields: [authorId], references: [id], onUpdate: NoAction)
 }

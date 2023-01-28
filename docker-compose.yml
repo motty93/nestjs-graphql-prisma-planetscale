@@ -1,20 +1,25 @@
-version: '3'
+version: '3.9'
 
 services:
-  postgres:
+  mysql:
     build: ./docker
-    image: nest-database
-    container_name: nest-postgres
+    image: planetscale-data
+    container_name: planetscale-data
+    # platform: linux/arm64
     environment:
-      POSTGRES_HOST_AUTH_METHOD: 'trust'
+      MYSQL_DATABASE: planetscale_dev
+      MYSQL_USER: planetscale
+      MYSQL_PASSWORD: planetscale
+      MYSQL_ROOT_PASSWORD: root
       TZ: 'Asia/Tokyo'
     volumes:
-      - ./docker/init:/docker-entrypoint-initdb.d
-      - nest-data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d # 初期データ投入
+      - ./docker/init/my.cnf:/etc/mysql/conf.d/my.cnf
+      - planetscale-data:/var/lib/mysql
     ports:
-      - '5555:5432'
+      - '33306:3306'
     restart: always
 
 volumes:
-  nest-data:
+  planetscale-data:
     driver: local
