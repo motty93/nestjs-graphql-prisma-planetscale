@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  relationMode         = "prisma"
 }
 
 generator nestgraphql {
@@ -32,11 +32,13 @@ model Post {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
 
-  authorId  String    @map("user_id")
+  authorId  String    @map("author_id")
   title     String    @db.Text()
   votes     Int?      @default(0)
   deletedAt DateTime? @map("deleted_at") @db.Timestamp(0)
 
   // planetscaleではonUpdate: NoAction必須
   author Author @relation(fields: [authorId], references: [id], onUpdate: NoAction)
+
+  @@index([authorId])
 }
