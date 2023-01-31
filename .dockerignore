@@ -1,5 +1,14 @@
+docker/
+test/
+node_modules/
 fly.toml
 Dockerfile
+docker-compose.yml
+README.md
 .dockerignore
-node_modules
 .git
+.gitignore
+.env
+.env.sample
+.eslintrc.js
+.prettierrc
