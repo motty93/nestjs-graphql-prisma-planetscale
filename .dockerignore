@@ -1,6 +1,7 @@
 docker/
 test/
 node_modules/
+doc/
 fly.toml
 Dockerfile
 docker-compose.yml
